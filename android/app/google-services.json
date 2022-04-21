@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "372659599931",
+    "project_id": "iiymla",
+    "storage_bucket": "iiymla.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:372659599931:android:c23243e94e7e33ce63fa1e",
+        "android_client_info": {
+          "package_name": "com.iiy.mla"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "372659599931-cv12pl7jtpgfq4gkh8b1sdhdlh6364i2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iiy.mla",
+            "certificate_hash": "e0dd5c19864444bec994713c039d14a6b8279421"
+          }
+        },
+        {
+          "client_id": "372659599931-871mn8othr390crohccpv725v3p8vobg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwFQrrl883_qE8pJpDHe1h3qtJ0eKRSnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "372659599931-871mn8othr390crohccpv725v3p8vobg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
