@@ -385,7 +385,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             .signInWithEmailAndPassword(email: email, password: password)
             .then((uid) => {
                   Fluttertoast.showToast(msg: "Login Successful"),
-                  prefs.setString('email', 'useremail@gmail.com'),
+                  prefs.setString('email', 'admin'),
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(

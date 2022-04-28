@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'package:flutter_mla_app/mla_admin/login_admin.dart';
 import 'package:otp_text_field/style.dart';
-import 'otp_login.dart';
+import '../user/otp_login.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 
-class PhoneAuthPage extends StatefulWidget {
+class MLAPhoneAuthPage extends StatefulWidget {
   @override
-  _PhoneAuthPageState createState() => _PhoneAuthPageState();
+  _MLAPhoneAuthPageState createState() => _MLAPhoneAuthPageState();
 }
 
-class _PhoneAuthPageState extends State<PhoneAuthPage> {
+class _MLAPhoneAuthPageState extends State<MLAPhoneAuthPage> {
   int start = 30;
   bool wait = false;
   bool isLoading = false;
@@ -27,7 +27,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("USER  LOGIN",
+        title: Text("MLA  LOGIN",
             style: TextStyle(
                 fontFamily: GoogleFonts.lato().fontFamily,
                 color: Colors.black,
@@ -150,38 +150,6 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                             ),
                           ),
                   ),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Divider(
-                indent: 20,
-                endIndent: 20,
-                thickness: 1.2,
-                color: Colors.black,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AdminLoginPage(),
-                      ));
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Color.fromARGB(255, 250, 202, 23)),
-                ),
-                child: Text(
-                  "I'm An ADMIN",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16),
                 ),
               ),
             ],

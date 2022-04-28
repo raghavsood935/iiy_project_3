@@ -342,10 +342,8 @@ class card_widget extends StatelessWidget {
                 child: Image.network(
                   ImagePath!,
                   width: 190,
-                  height: 190,
-                  fit: BoxFit.cover
-
-                  ,
+                  height: 150,
+                  fit: BoxFit.cover,
                 ),
               ),
               SizedBox(height: 10,),

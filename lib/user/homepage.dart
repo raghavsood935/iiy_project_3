@@ -9,6 +9,7 @@ import 'package:flutter_mla_app/user/logoutpage.dart';
 import 'package:flutter_mla_app/user/notifications.dart';
 import 'package:flutter_mla_app/user/ongoing_projects.dart';
 import 'package:flutter_mla_app/user/profile.dart';
+import 'package:flutter_mla_app/user/registered_complaints.dart';
 import 'package:flutter_mla_app/user/upcoming_events.dart';
 import 'package:flutter_mla_app/user/write_complaint.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -62,10 +63,9 @@ class _HomepageState extends State<Homepage> {
                     child: Text(
                       'MERA MLA MERE NAAL ',
                       style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontFamily: GoogleFonts.poppins().fontFamily
-                      ),
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontFamily: GoogleFonts.poppins().fontFamily),
                     ),
                   ),
                 ),
@@ -129,6 +129,42 @@ class _HomepageState extends State<Homepage> {
                   },
                   title: Text(
                     'Edit Profile',
+                    style: TextStyle(
+                        color: Color.fromARGB(255, 250, 202, 23), fontSize: 18),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 5,
+                  right: 5,
+                ),
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(
+                      width: 1,
+                      color: Colors.black,
+                    ),
+                  ),
+                  leading: Icon(
+                    Icons.edit_note_sharp,
+                    color: Color.fromARGB(255, 250, 202, 23),
+                    size: 30,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RegisteredComplaints(),
+                      ),
+                    );
+                  },
+                  title: Text(
+                    'View Complaints',
                     style: TextStyle(
                         color: Color.fromARGB(255, 250, 202, 23), fontSize: 18),
                   ),
@@ -240,10 +276,9 @@ class _HomepageState extends State<Homepage> {
           title: Text(
             "DASHBOARD",
             style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-                fontFamily: GoogleFonts.poppins().fontFamily
-            ),
+                color: Colors.black,
+                fontSize: 20,
+                fontFamily: GoogleFonts.poppins().fontFamily),
           ),
           backgroundColor: Color.fromARGB(255, 250, 202, 23),
         ),
@@ -260,8 +295,7 @@ class _HomepageState extends State<Homepage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
                     image: DecorationImage(
-                      image: AssetImage(
-                          "assets/images/carousel 3.jpg"),
+                      image: AssetImage("assets/images/carousel 3.jpg"),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -273,8 +307,7 @@ class _HomepageState extends State<Homepage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
                     image: DecorationImage(
-                      image: AssetImage(
-                          "assets/images/carousel 2.jpg"),
+                      image: AssetImage("assets/images/carousel 2.jpg"),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -285,8 +318,7 @@ class _HomepageState extends State<Homepage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
                     image: DecorationImage(
-                      image: AssetImage(
-                          "assets/images/carousel 1.jpg"),
+                      image: AssetImage("assets/images/carousel 1.jpg"),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -297,8 +329,7 @@ class _HomepageState extends State<Homepage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
                     image: DecorationImage(
-                      image: AssetImage(
-                          "assets/images/carousel 4.jpg"),
+                      image: AssetImage("assets/images/carousel 4.jpg"),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -503,9 +534,11 @@ class _HomepageState extends State<Homepage> {
                 InkWell(
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => WriteComplaint(),),);
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WriteComplaint(),
+                      ),
+                    );
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),

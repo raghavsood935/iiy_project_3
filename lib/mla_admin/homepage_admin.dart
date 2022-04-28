@@ -62,8 +62,12 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 },
                 child: Row(children:[
                 Center(child: Text(
-                    "Logout",
-                  style: TextStyle(color: Colors.black),
+                    "LOGOUT ",
+                  style: TextStyle(
+                         color: Colors.black,
+                         fontWeight: FontWeight.bold,
+                         fontFamily: GoogleFonts.lato().fontFamily
+                  ),
                  ),
                 ),
                    Icon(

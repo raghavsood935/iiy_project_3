@@ -3,9 +3,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_mla_app/user/homepage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 
 class WriteComplaint extends StatefulWidget {
   @override
@@ -23,12 +25,15 @@ class _WriteComplaintState extends State<WriteComplaint> {
   String name = "";
   String mobile = "";
   String fileextension = "";
+  bool filePicked = false;
   var pickedFile;
+  var imageFile;
   final complaintController = TextEditingController();
   final wardController = TextEditingController();
   final numberController = TextEditingController();
   final nameController = TextEditingController();
   FirebaseStorage storage = FirebaseStorage.instance;
+
   Future<void> getFile() async {
     final result = await FilePicker.platform.pickFiles(
         withReadStream: true,
@@ -45,13 +50,10 @@ class _WriteComplaintState extends State<WriteComplaint> {
     pickedFile = File(
       file.path.toString(),
     );
+    filePicked = true;
     fileextension = file.path!.split(".").last.toLowerCase();
     int idx = file.name.toString().lastIndexOf(".");
     fileName = file.name.substring(0, idx).trim();
-    final now = new DateTime.now();
-    String formatter = now.toString();
-    idx = formatter.indexOf(" ");
-    newdate = formatter.substring(0, idx).split('-').reversed.join("/");
     setState(() {});
   }
 
@@ -61,10 +63,10 @@ class _WriteComplaintState extends State<WriteComplaint> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(
-          "Complaints",
+          "Add New Complaint",
           style: TextStyle(
               color: Colors.black,
-              fontSize: 22,
+              fontSize: 21,
               fontFamily: GoogleFonts.poppins().fontFamily),
         ),
         backgroundColor: Color.fromARGB(255, 250, 202, 23),
@@ -323,13 +325,20 @@ class _WriteComplaintState extends State<WriteComplaint> {
                       : MaterialButton(
                           onPressed: () async {
                             setState(() {
+                              final now = DateTime.now();
+                              String formatter = now.toString();
+                              int idx = formatter.indexOf(" ");
+                              newdate = formatter
+                                  .substring(0, idx)
+                                  .split('-')
+                                  .reversed
+                                  .join("/");
                               isLoading = true;
                               ward = wardController.text;
                               name = nameController.text;
                               mobile = numberController.text;
                               complaint = complaintController.text;
                             });
-                            Fluttertoast.showToast(msg: "Please Wait !");
                             try {
                               // Uploading the selected image with some custom meta data
                               await storage

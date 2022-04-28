@@ -1,8 +1,10 @@
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pdftron_flutter/pdftron_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReceivedComplaints extends StatefulWidget {
   @override
@@ -11,14 +13,95 @@ class ReceivedComplaints extends StatefulWidget {
 
 class _ReceivedComplaintsState extends State<ReceivedComplaints> {
   FirebaseStorage storage = FirebaseStorage.instance;
+  bool resolved = false;
+  var status;
   Future<List<Map<String, dynamic>>>? future;
   bool isLoading = false;
+  String search = "";
+  final searchController = TextEditingController();
+  Icon closeIcon = new Icon(Icons.close);
+  Icon searchIcon = new Icon(
+    CupertinoIcons.search,
+    size: 25,
+  );
+  // ignore: unnecessary_new
+  Widget appBarTitle = new Text(
+    "Received Complaints",
+    style: TextStyle(fontSize: 20, color: Colors.black),
+  );
 
   @override
   void initState() {
     super.initState();
     future = _loadEvents();
-    Fluttertoast.showToast(msg: "Current Complaints");
+    getStatus();
+  }
+
+  getStatus() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    status = preferences.getString("updated").toString();
+  }
+
+  AlertBox() {
+    AlertDialog alert = AlertDialog(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: Colors.black, width: 1.5)),
+      title: Text(
+        "Are You Sure?",
+        style: GoogleFonts.lato(
+            textStyle: Theme.of(context).textTheme.bodyText1, fontSize: 22),
+      ),
+      content: Text(
+        "Mark this complaint as RESOLVED ?",
+        style: GoogleFonts.lato(
+            textStyle: Theme.of(context).textTheme.bodyText1, fontSize: 15),
+      ),
+      actions: <Widget>[
+        OutlinedButton(
+          onPressed: () async {
+            Navigator.of(context, rootNavigator: true).pop();
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            preferences.setString("updated", "res");
+            setState(() {
+              resolved = true;
+            });
+          },
+          style: ButtonStyle(
+            side: MaterialStateProperty.all(BorderSide(color: Colors.black54)),
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30))),
+          ),
+          child: Text(
+            "YES",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        OutlinedButton(
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          },
+          style: ButtonStyle(
+            side: MaterialStateProperty.all(BorderSide(color: Colors.black)),
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0))),
+          ),
+          child: Text(
+            "NO",
+            style: TextStyle(color: Colors.black),
+          ),
+        )
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   Future<List<Map<String, dynamic>>> _loadEvents() async {
@@ -58,10 +141,67 @@ class _ReceivedComplaintsState extends State<ReceivedComplaints> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Received Complaints",
-          style: TextStyle(color: Colors.black),
-        ),
+        title: appBarTitle,
+        actions: <Widget>[
+          IconButton(
+            icon: searchIcon,
+            onPressed: () {
+              setState(() {
+                if (searchIcon.icon == CupertinoIcons.search) {
+                  searchIcon = Icon(
+                    Icons.close,
+                    size: 25,
+                  );
+                  appBarTitle = SizedBox(
+                    height: 50,
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          search = value;
+                        });
+                      },
+                      controller: searchController,
+                      cursorColor: Colors.black,
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        prefixIcon: Icon(
+                          CupertinoIcons.search,
+                          color: Colors.black,
+                        ),
+                        hintText: "SEARCH BY NAME",
+                        hintStyle: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  searchIcon = Icon(CupertinoIcons.search);
+                  appBarTitle = Text(
+                    "Received Complaints",
+                    style: TextStyle(
+                      fontSize: 21,
+                      color: Colors.black,
+                    ),
+                  );
+                }
+              });
+            },
+          ),
+        ],
         backgroundColor: Color.fromARGB(255, 250, 202, 23),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
@@ -89,204 +229,362 @@ class _ReceivedComplaintsState extends State<ReceivedComplaints> {
                             snapshot.data![index];
                         String name = image["path"].toString();
                         String ext = image["extension"];
-                        return InkWell(
-                          onTap: () {
-                            ext == 'jpg' || ext == 'png'
-                                ? Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => OpenImage(
-                                              pathImage: image['url'],
-                                            )))
-                                : PdftronFlutter.openDocument(image["url"]);
-                          },
-                          child: SizedBox(
-                            height: 200,
-                            child: Card(
-                                shape: RoundedRectangleBorder(
-                                  side: BorderSide(color: Colors.black),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                margin: const EdgeInsets.symmetric(vertical: 5),
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 5,
+                        return image["name"]
+                                .toString()
+                                .toLowerCase()
+                                .contains(search.toLowerCase())
+                            ? InkWell(
+                                onTap: () {
+                                  ext == 'jpg' || ext == 'png'
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => OpenImage(
+                                                    pathImage: image['url'],
+                                                  )))
+                                      : PdftronFlutter.openDocument(
+                                          image["url"]);
+                                },
+                                child: SizedBox(
+                                  height: 280,
+
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 85),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            "COMPLAINT FROM ",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          Text(
-                                            "${image['name'].toString().toUpperCase()}",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.red,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Divider(
-                                      thickness: 1,
-                                      indent: 5,
-                                      endIndent: 5,
-                                      color: Colors.black,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(1.0),
-                                      child: IntrinsicHeight(
-                                        child: Row(
-                                          children: [
-                                            Column(children: [
-                                              Image.network(
-                                                image['url'],
-                                                height: 110,
-                                                width: 130,
-                                              ),
-                                              Text(
-                                                "TAP TO VIEW ",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ]),
-                                            VerticalDivider(
-                                              color: Colors.black,
-                                              thickness: 1,
-                                              indent: 5,
-                                              endIndent: 5,
-                                            ),
-                                            SizedBox(
-                                              width: 2,
-                                            ),
-                                            Column(
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 5),
+                                          child: IntrinsicHeight(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.center,
                                               children: [
-                                                RichText(
-                                                  text: TextSpan(
-                                                    text: "MOBILE NO : ",
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 15,
-                                                        fontFamily:
-                                                            GoogleFonts.lato()
-                                                                .fontFamily,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                    children: <TextSpan>[
-                                                      TextSpan(
-                                                          text:
-                                                              " ${image['mobile']}",
-                                                          style: TextStyle(
-                                                            color: Colors.red,
-                                                            fontFamily:
-                                                                GoogleFonts
-                                                                        .lato()
-                                                                    .fontFamily,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16,
-                                                          )),
-                                                    ],
+                                                Text(
+                                                  "COMPLAINT FROM ",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                SizedBox(
-                                                  height: 2,
+                                                Text(
+                                                  "${image['name'].toString().toUpperCase()}",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.red,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
-                                                RichText(
-                                                  text: TextSpan(
-                                                    text: "WARD NUMBER : ",
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 15,
-                                                        fontFamily:
-                                                            GoogleFonts.lato()
-                                                                .fontFamily,
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "DATE  - ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 13,
+                                                  color: Colors.black,
+                                                  fontFamily: GoogleFonts.lato()
+                                                      .fontFamily),
+                                            ),
+                                            Text(
+                                              " ${image["date"]}",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 13,
+                                                  fontFamily:
+                                                      GoogleFonts.poppins()
+                                                          .fontFamily,
+                                                  fontWeight: FontWeight.bold),
+                                            )
+                                          ],
+                                        ),
+                                        Divider(
+                                          thickness: 1,
+                                          indent: 5,
+                                          endIndent: 5,
+                                          color: Colors.black,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            IntrinsicHeight(
+                                              child: Row(
+                                                children: [
+                                                  Column(children: [
+                                                    Image.network(
+                                                      image['url'],
+                                                      height: 110,
+                                                      width: 120,
+                                                    ),
+                                                    Text(
+                                                      "TAP TO VIEW",
+                                                      style: TextStyle(
                                                         fontWeight:
-                                                            FontWeight.bold),
-                                                    children: <TextSpan>[
-                                                      TextSpan(
-                                                          text:
-                                                              " ${image['ward']}",
+                                                            FontWeight.bold,
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ]),
+                                                  VerticalDivider(
+                                                    color: Colors.black,
+                                                    thickness: 1,
+                                                    indent: 5,
+                                                    endIndent: 5,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 2,
+                                                  ),
+                                                  Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      RichText(
+                                                        text: TextSpan(
+                                                          text: "MOBILE NO : ",
                                                           style: TextStyle(
-                                                              color: Colors.red,
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 15,
                                                               fontFamily:
                                                                   GoogleFonts
                                                                           .lato()
                                                                       .fontFamily,
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .bold)),
-                                                    ],
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 2,
-                                                ),
-                                                Text(
-                                                  "MESSAGE :  ",
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontFamily:
-                                                          GoogleFonts.lato()
-                                                              .fontFamily,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                      right: 5, bottom: 0),
-                                                  child: Container(
-                                                    height: 65,
-                                                    width: 230,
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.grey),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                    ),
-                                                    child: Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 10,
-                                                          right: 5,
-                                                          top: 5),
-                                                      child: Text(
-                                                        "${image['complaint']}",
+                                                                      .bold),
+                                                          children: <TextSpan>[
+                                                            TextSpan(
+                                                                text:
+                                                                    " ${image['mobile']}",
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .red,
+                                                                  fontFamily: GoogleFonts
+                                                                          .lato()
+                                                                      .fontFamily,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 16,
+                                                                )),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 2,
+                                                      ),
+                                                      RichText(
+                                                        text: TextSpan(
+                                                          text:
+                                                              "WARD NUMBER : ",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 15,
+                                                              fontFamily:
+                                                                  GoogleFonts
+                                                                          .lato()
+                                                                      .fontFamily,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          children: <TextSpan>[
+                                                            TextSpan(
+                                                                text:
+                                                                    " ${image['ward']}",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .red,
+                                                                    fontFamily:
+                                                                        GoogleFonts.lato()
+                                                                            .fontFamily,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold)),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 2,
+                                                      ),
+                                                      Text(
+                                                        "MESSAGE :  ",
                                                         style: TextStyle(
-                                                            fontSize: 17,
+                                                            fontSize: 15,
                                                             fontFamily:
                                                                 GoogleFonts
                                                                         .lato()
-                                                                    .fontFamily),
+                                                                    .fontFamily,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                right: 5,
+                                                                bottom: 0),
+                                                        child: Container(
+                                                          height: 65,
+                                                          width: 180,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .grey),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                          ),
+                                                          child: Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    left: 10,
+                                                                    right: 5,
+                                                                    top: 5),
+                                                            child: Text(
+                                                              "${image['complaint']}",
+                                                              style: TextStyle(
+                                                                  fontSize: 17,
+                                                                  fontFamily: GoogleFonts
+                                                                          .lato()
+                                                                      .fontFamily),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 5,
+                                                      )
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        resolved == false
+                                            ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  ElevatedButton.icon(
+                                                    onPressed: () {
+                                                      AlertBox();
+                                                    },
+                                                    label: Text(
+                                                      "RESOLVED",
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14),
+                                                    ),
+                                                    icon: Icon(CupertinoIcons
+                                                        .checkmark_alt),
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      250,
+                                                                      202,
+                                                                      23)),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 15,
+                                                  ),
+                                                  ElevatedButton.icon(
+                                                    onPressed: () {},
+                                                    label: Text(
+                                                      "NOT RESOLVED",
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14),
+                                                    ),
+                                                    icon: Icon(
+                                                        CupertinoIcons.clear),
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      250,
+                                                                      202,
+                                                                      23)),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            : Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  ElevatedButton.icon(
+                                                    onPressed: () async {
+                                                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                                                      prefs.remove("updated");
+                                                      setState(() {
+                                                        resolved = false;
+                                                      });
+                                                    },
+                                                    label: Text(
+                                                      "MARKED RESOLVED",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                      ),
+                                                    ),
+                                                    icon: Icon(CupertinoIcons
+                                                        .checkmark_alt),
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(
+                                                        Colors.green,
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )),
-                          ),
-                        );
+                                                ],
+                                              )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container();
                       },
                     );
                   }

@@ -1,22 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mla_app/mla_admin/homepage_admin.dart';
 import 'package:flutter_mla_app/user/user_phoneauth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SplashScreenToSelectionPage extends StatefulWidget {
+class SplashScreenToAdminHomePage extends StatefulWidget {
   @override
-  State<SplashScreenToSelectionPage> createState() =>
-      _SplashScreenToSelectionPageState();
+  State<SplashScreenToAdminHomePage> createState() =>
+      _SplashScreenToAdminHomePageState();
 }
 
-class _SplashScreenToSelectionPageState
-    extends State<SplashScreenToSelectionPage> {
+class _SplashScreenToAdminHomePageState
+    extends State<SplashScreenToAdminHomePage> {
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 3500), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => PhoneAuthPage()));
+          context, MaterialPageRoute(builder: (context) => AdminHomePage()));
     });
   }
 

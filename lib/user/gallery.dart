@@ -194,7 +194,7 @@ class card_widget extends StatelessWidget {
       ),
       child: Container(
         width: 100,
-        height: 150,
+        height: 200,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(5),
@@ -209,7 +209,7 @@ class card_widget extends StatelessWidget {
               child: Image.network(
                 ImagePath!,
                 width: 150,
-                height: 190,
+                height: 150,
                 fit: BoxFit.cover,
               ),
             ),

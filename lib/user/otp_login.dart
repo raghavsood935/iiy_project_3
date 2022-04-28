@@ -123,7 +123,7 @@ class AuthClass {
           MaterialPageRoute(builder: (builder) => Homepage()),
           (route) => false);
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('email', 'useremail@gmail.com');
+      prefs.setString('email', 'user');
       showSnackBar(context, "You're now Logged In");
     } catch (e) {
       showSnackBar(

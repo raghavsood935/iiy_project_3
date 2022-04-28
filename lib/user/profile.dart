@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mla_app/user/phoneauth.dart';
+import 'package:flutter_mla_app/user/user_phoneauth.dart';
 import 'package:flutter_mla_app/user/user_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 
